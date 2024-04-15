@@ -1,0 +1,91 @@
+import heapq
+import bisect
+
+# Requirement 1: Social Media Post Manager using a Dictionary
+class SocialMediaPost:
+    def __init__(self, datetime, post, person, views=0):
+        self.datetime = datetime
+        self.post = post
+        self.person = person
+        self.views = views
+
+posts_by_datetime = {}
+
+def add_post(post):
+    posts_by_datetime[post.datetime] = post
+
+def get_post_by_datetime(datetime):
+    return posts_by_datetime.get(datetime, None)
+
+
+# Requirement 2: Social Media Time Range Manager using a List and Binary Search
+
+class SocialMediaManager:
+    def __init__(self):
+        self.sorted_datetimes = []
+        self.posts_by_datetime = {}
+
+    def add_post(self, post):
+        position = bisect.bisect_left(self.sorted_datetimes, post.datetime)
+        bisect.insort_left(self.sorted_datetimes, post.datetime)
+        self.posts_by_datetime[post.datetime] = post
+
+    def get_posts_in_range(self, start_datetime, end_datetime):
+        start_index = bisect.bisect_left(self.sorted_datetimes, start_datetime)
+        end_index = bisect.bisect_right(self.sorted_datetimes, end_datetime)
+        return [self.posts_by_datetime[dt] for dt in self.sorted_datetimes[start_index:end_index]]
+
+
+# Requirement 3: Priority Queue Post Manager using heapq
+
+class PostHeap:
+    def __init__(self):
+        self.heap = []
+
+    def add_post(self, post):
+        # The post views are negated to create a max-heap based on views
+        heapq.heappush(self.heap, (-post.views, post))
+
+    def get_most_viewed_post(self):
+        if self.heap:
+            return heapq.heappop(self.heap)[1]
+        return None
+
+
+# Demonstrating the functionality of each class
+# Assuming the SocialMediaPost class and add_post function have been defined as shown previously.
+
+# Create a new social media post
+new_post = SocialMediaPost(datetime="2024-04-15T10:30:00", post="Hello World!", person="Alice")
+
+# Add the post to the system
+add_post(new_post)
+
+# Retrieve the post by its datetime
+retrieved_post = get_post_by_datetime("2024-04-15T10:30:00")
+print(f"Post: {retrieved_post.post}, by: {retrieved_post.person}")
+
+# Assuming the SocialMediaManager class has been defined as shown previously.
+
+# Initialize the manager
+manager = SocialMediaManager()
+
+# Add some posts
+manager.add_post(SocialMediaPost(datetime="2024-04-15T09:00:00", post="Good morning!", person="Bob"))
+manager.add_post(SocialMediaPost(datetime="2024-04-15T12:00:00", post="Having lunch.", person="Charlie"))
+
+# Get posts in a range
+posts_in_morning = manager.get_posts_in_range("2024-04-15T08:00:00", "2024-04-15T10:00:00")
+for post in posts_in_morning:
+    print(f"Post: {post.post}, by: {post.person}")
+
+# Assuming the PostHeap class has been defined as shown previously.
+
+# Initialize the heap
+post_heap = PostHeap()
+post_heap.add_post(SocialMediaPost(datetime="2024-04-15T13:00:00", post="Just chilling.", person="Dave", views=150))
+
+# To get the most viewed post
+most_viewed_post = post_heap.get_most_viewed_post()
+if most_viewed_post:
+    print(f"Most viewed post: {most_viewed_post.post}, by: {most_viewed_post.person}")
