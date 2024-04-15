@@ -2,7 +2,7 @@ import heapq
 import bisect
 
 # Requirement 1: Social Media Post Manager using a Dictionary
-class SocialMediaPost:
+class SocialMediaPost
     def __init__(self, datetime, post, person, views=0):
         self.datetime = datetime
         self.post = post
